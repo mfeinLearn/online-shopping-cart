@@ -12,7 +12,8 @@ function ProductListing(props) {
                 product={product}
                 // {/*addToCart comes from mapDispatchToProps so we can pass it into ProductListItem*/}
                 addToCart={props.addToCart}
-                cart={cartItemsWithQuantities(props.cart)}
+                removeFromCart = {props.removeFromCart}
+                cartItem={props.cart.filter(cartItem => cartItem.id === product.id)[0]}
             />)
         }
     </div>
@@ -21,7 +22,7 @@ function ProductListing(props) {
 // mapStateToProps -> which defines which key out of our redux store we are going to allow as our props inside our
 //.. current component. So in this case we want the cart key to go to the cart reducer inside of our redux store
 
-// mapDispatchToProps -> we want to be able to dispatch and add to cart 
+// mapDispatchToProps -> we want to be able to dispatch and add to cart
 
 // This is going to grab all of the values for cart state
 //.. and it is going to map it to props

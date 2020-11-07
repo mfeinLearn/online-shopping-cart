@@ -1,7 +1,9 @@
 import React from 'react'
+import AddBtn from './add-btn'
+import RemoveBtn from './remove-btn'
+
 
 export default function ProductListItem(props) {
-    const thisItemInCart = props.cart.filter(item => item.id === props.product.id)[0]// that filter call will return an array of one item. we just want to grab that first index.
     return <div className='product-list-item'>
     <h3> {props.product.name} </h3>
     <img
@@ -12,13 +14,22 @@ export default function ProductListItem(props) {
     <div>{props.product.description}</div>
     <div>${props.product.price}</div>
     <div>
-    <button
-    //{/*this takes in an item - we need to call this in an arrow function so we click on it it fires that function */}
-        onClick={() => props.addToCart(props.product)}>
-        Add to cart ({
-            (thisItemInCart && thisItemInCart.quantity) || 0
-        })
-    </button>
+        <AddBtn
+            cartItem={props.cartItem}
+            product={props.product}
+            addToCart={props.addToCart}
+        />
+
+        {
+            props.cartItem
+            ? <RemoveBtn
+                cartItem={props.cartItem}
+                product={props.product}
+                removeFromCart={props.removeFromCart}
+            />
+            : null
+        }
+
     </div>
     </div>
 }
@@ -31,3 +42,6 @@ export default function ProductListItem(props) {
 //.. we want to find it inside of our cart then we can ask the question... is the item in the cart?
 // if it is how many are there and if their are that many items then you are going to put that number inside of the
 //.. () ^^^ but if their is not any items in the cart or if it dones not exist in the cart at all then just return 0
+
+
+// {} -> JS expression
