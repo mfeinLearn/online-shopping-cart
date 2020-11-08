@@ -3,6 +3,9 @@ import ProductListItem from './product-list-item'
 import { connect } from 'react-redux'
 import { cartItemsWithQuantities } from '../cart'
 
+
+// we are going to change this from a stateless function to a lifecycle class because we need to wire in
+//.. to component did mount so when this component mounts it will do a async request to the api 
 function ProductListing(props) {
 
     return <div className='product-listing'>

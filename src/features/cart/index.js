@@ -1,64 +1,76 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-// currently our cart items are just an array they dont actually
-//.. have a quantity
-// we are going to create a function that is going to count
-//.. those up
-export const cartItemsWithQuantities = (cartItems) => {
-    return cartItems.reduce((acc, item) => {
-        // item -> is in our cartItems
-        // item2 -> is in our acc
-        const filteredItem = acc.filter(item2 => item2.id === item.id)[0]// [0] - this means find the first item that it finds
-        filteredItem !== undefined
-        ? filteredItem.quantity++
-        // if the item does not exist inside of the acc (ie. if the acc is empty or does not have that item)
-        : acc.push({ ...item,  quantity: 1, })// then push all of the values from item and quantity of 1
-        return acc // return the acc so we can have access to the acc on the next step
-    }, [])
+// for sort:
+    // 1st time you call sort 0 index and  1 index
+    // 1st time you call sort 1 index and  2 index
+    // 1st time you call sort 2 index and  3 index
+function sort(items) {
+    return items.sort((a, b) => a.id - b.id)
 }
 
-// reduce() -> gives us a acc and an item for each iteration
-//.. we want to go over each of the items and count the
-//.. quantities.
+function Cart(props) {
+    return <table>
+    <thead>
+    <tr>
+    <th>Item</th>
+    <th>Quantity</th>
+    <th></th>
+    <th></th>
+    </tr>
+    </thead>
+    <thead>
+    {
+        sort(props.cart).map(item => <tr>
+            <td>{ item.name }</td>
+            <td>{ item.quantity }</td>
+            <td>
+            <button
+            onClick={() => props.addToCart(item)}
+            >+
+            </button>
 
-// the first argument of reduce: the function that you want
-//.. to call for every iteration
+            <button
+            onClick={() => props.removeFromCart(item)}
+            >-
+            </button>
+            </td>
+                <button
+                onClick={() => props.removeAllFromCart(item)}
+                >
+                Remove all from cart
+                </button>
+            <td>
+            </td>
+        </tr>)
+    }
+    </thead>
+    </table>
+}
 
-// the second argument of reduce: is what ever the acc variable is
-//.. is going to start off as. In our case it is going to start off
-//.. as an empty array
+//-> we need to get the state from redux so we can map it to props
+//-> we are going to return the keys that we care about which is cart which would be state.cart
+function mapStateToProps(state) {
+    return {
+        cart: state.cart,
+    }
+}
 
-// We are going to iterate over cartItems and for each one we
-//.. are going to call our arrow function
+// add some functions that we want to add on to props
+function mapDispatchToProps(dispatch) {
+    return {
+        addToCart: (item) => {
+            dispatch({ type: 'ADD', payload: item })
+        },
+        removeFromCart: (item) => {
+            dispatch({ type: 'REMOVE', payload: item })
 
-// Example of how the acc and the reducer works:
-//
-// cartItems = [
-//     {
-//         id: 1,
-//     },
-//     {
-//         id: 1,
-//     },
-//     {
-//         id: 2,
-//     },
-// ]
-//
-// acc = [
-//     {
-//         id: 1,
-//         quantity: 2,
-//     },
-//     {
-//         id: 2,
-//         quantity: 1,
-//     }
-// ]
+        },
+        removeAllFromCart: (item) => {
+            dispatch({ type: 'REMOVE_ALL', payload: item })
 
-// what is the spread operator:
-// if the following is what we have ->
-// {...item}
-// item: { id: 1. name: 'foo'}
-// then -> {...item} => { id: 1. name: 'foo'} we are just dumping what is in item into that hash
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart)

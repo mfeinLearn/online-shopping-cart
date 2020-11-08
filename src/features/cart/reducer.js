@@ -19,6 +19,10 @@ const removeFromCart = (cart, item) => {
     : [ ...cartWithoutItem(cart, item), { ...item, quantity: item.quantity - 1 }]
 }
 
+const removeAllFromCart = (cart, item) => {
+    return [ ...cartWithoutItem(cart, item)]
+}
+
 
 // ACTUAL REDUCER
 
@@ -30,7 +34,8 @@ const cartReducer = (state=[], action) => {
             return addToCart(state , action.payload)
         case 'REMOVE':
             return removeFromCart(state, action.payload)
-
+        case 'REMOVE_ALL':
+            return removeAllFromCart(state, action.payload)
         default: // must have a default
             return state; // that just returns the current state
     }
