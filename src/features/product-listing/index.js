@@ -1,25 +1,37 @@
 import React from 'react'
 import ProductListItem from './product-list-item'
 import { connect } from 'react-redux'
-import { cartItemsWithQuantities } from '../cart'
+
+import fetchApi from '../../modules/fetch-api'
 
 
 // we are going to change this from a stateless function to a lifecycle class because we need to wire in
-//.. to component did mount so when this component mounts it will do a async request to the api 
-function ProductListing(props) {
-
-    return <div className='product-listing'>
-        {
-            props.products.map( product =>
-                <ProductListItem
-                product={product}
-                // {/*addToCart comes from mapDispatchToProps so we can pass it into ProductListItem*/}
-                addToCart={props.addToCart}
-                removeFromCart = {props.removeFromCart}
-                cartItem={props.cart.filter(cartItem => cartItem.id === product.id)[0]}
-            />)
-        }
-    </div>
+//.. to component did mount so when this component mounts it will do a async request to the api
+class ProductListing extends React.Component {
+    // componentDidMount is going to fire as soon as our component successfully mounted on the page
+    //.. when that happens we are going to need to do a fetch to the api to get the data
+    componentDidMount() {
+        const { loadProducts } = this.props
+        fetchApi('get', `http://localhost:3002/api/v1/products`)
+        .then((json => {
+            loadProducts(json)
+        }))
+    }
+    render() {
+        const { addToCart, removeFromCart, products, cart} = this.props
+        return <div className='product-listing'>
+            {
+                products.map( product =>
+                    <ProductListItem
+                    product={product}
+                    // {/*addToCart comes from mapDispatchToProps so we can pass it into ProductListItem*/}
+                    addToCart={addToCart}
+                    removeFromCart = {removeFromCart}
+                    cartItem={cart.filter(cartItem => cartItem.id === product.id)[0]}
+                />)
+            }
+        </div>
+    }
 }
 
 // mapStateToProps -> which defines which key out of our redux store we are going to allow as our props inside our
@@ -32,7 +44,8 @@ function ProductListing(props) {
 // ex: we can say props.cart and get those values - it will give us everything inside of the cart inside of this component
 function mapStateToProps(state) {
     return {
-        cart: state.cart // we are pulling it out of redux and we are putting it into a prop called cart
+        cart: state.cart, // we are pulling it out of redux and we are putting it into a prop called cart
+        products: state.products //we also need to get that out of state (props.products) //this is going to map that state from the redux store on to our props with a key called products
     }
 }
 
@@ -43,6 +56,9 @@ function mapDispatchToProps(dispatch) {
     // we are going to return a new hash. addToCart is going to be the action
     return {
         // when we want to add something to the redux store
+        loadProducts: (products) => {
+            dispatch({ type: 'LOAD', payload: products })
+        },
         addToCart: (item) => {
             dispatch({ type: 'ADD', payload: item })
         },
